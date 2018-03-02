@@ -166,6 +166,8 @@ Composer is a dependency manager for PHP packages / libraries.
 The composer [installation guide](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
 provides all necessary steps for the setup.
 
+Check also the documentation [how to use composer in ILIAS](libs/composer/README.md).
+
 <a name="setup-ilias"></a>
 ### Setup ILIAS
 Install ILIAS on your favourite operation system with the provided [installation guide](docs/configuration/install.md).
@@ -377,6 +379,10 @@ Some good, more descriptive names have the following forms:
 - "someResultOccursUnderSomeCondition"          [ebenda]
 - "whenDoingSomeBehaviourThenSomeResultOccurs"  [ebenda]
 
+The method should always cover **only one** use case.
+Therefore multiple use cases should be separated into
+different methods (See [Good tests are FIRST](#good-tests-are-first)).
+
 <a name="current-state"></a>
 ##### Current state
 The style how methods are named in the tests are different the most common two
@@ -550,10 +556,12 @@ After some time something goes wrong, there will be a massive amount of time
 spend to found the actual cause because everything is failing due to the 
 high coupling between each test.
 
-Therefore, unit test must be executable any time in any possible order.
+Therefore, unit test must be executable any time in any possible order on any system.
 
-The Single Responsibility Principle (SRP) of the SOLID class design principle 
-describes that class should only have one reason to change. This principe is also 
+The [Single Responsibility Principle (SRP)](https://en.wikipedia.org/wiki/Single_responsibility_principle)
+of the [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design))
+class design principle 
+describes that class should only have one reason to change. This principle is also 
 really good for unit tests because if a test can break for more than one
 reason. It's the best to split the test in multiple cases. 
 "When a focused unit test breaks, it's usually obvious why." [1, Chap. 5]
@@ -567,8 +575,47 @@ deal with dates or time. That means this test have to deal with additional probl
 which makes writing them more difficult.
 
 In such situations mock objects are used to isolate the class from the outer world. 
-If the dependencies are not mockable there is usually something wrong with the 
-design of the component.
+If the dependencies are not mockable theses are indications for a flaw in the design.
+Mostly these designed function break rules of either [FIRST](#first) or
+the [SOLID princible](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+
+E.g. most of code in ILIAS uses the global $DIC e.g. to access the database.
+
+```php
+public function insertSomeData($data)
+{
+    global $DIC;
+    $ilDB = $DIC['ilDB'];
+    $ilDB->insert(...);
+}
+```
+
+To test this method you would have to mock the $DIC for every
+single unit test.
+The `$DIC` would be needed to be overwritten in every single unit test.
+To avoid this, the database object could be added via
+[dependency injection](https://en.wikipedia.org/wiki/Dependency_injection)
+in the constructor:
+
+```php
+public function __construct($database = null)
+{
+    if($database === null) {
+        global $DIC;
+        $database = $DIC['ilDB'];
+    }
+    $this->database = $database;
+}
+
+public function insertSomeData($someData)
+{
+    $this->database->insert(...);
+}
+```
+
+With example above every database connection can be mocked
+in every test, without the need of a `$DIC` during the execution
+time of the test.
 
 <a name="self-validating"></a>
 #### Self-Validating
@@ -590,8 +637,9 @@ unit test are written along with the production code because odd behaviours can 
 spotted as early as possible which minimized the possibility of expensive bug hunts 
 in the future.
 
-There are developers which even develop the unit test before they write 
-the actual code, this technique is called test driven development or short (TDD).
+Another approach is to write the unit test before writing 
+the actual code, this technique is called
+[test-driven development or short TDD](#https://en.wikipedia.org/wiki/Test-driven_development).
 
 <a name="write-correct-tests"></a>
 ### Write CORRECT tests
