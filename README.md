@@ -13,7 +13,6 @@ Installation of ILIAS is well documented on [our official Installation manual](h
 
 ILIAS can be extended with a lot of Plugins. You find the complete list in the [Plugin Repository](http://www.ilias.de/docu/goto.php?target=cat_1442&client_id=docu)
 
-
 ### Want to contribute? Great!
 
 We have a big [community](http://www.ilias.de/docu/goto.php?target=cat_1444&client_id=docu) and you can get a member of [ILIAS Society](http://www.ilias.de/docu/goto.php?target=cat_1669&client_id=docu).
@@ -28,3 +27,7 @@ We highly appreciate Pull-Request from external developers. Due to some regulati
 - Features/Refactorings need an entry in Feature-Wiki and has to get through the existing procedure for Feature-Requests: http://feature.ilias.de . Pull-Request target to trunk.
 
 Pull-Request will be assigned to the responsible maintainer(s). See further information on how contributions are handled in [/docs/documentation/contributing.md](/docs/documentation/contributing.md)
+
+## License
+
+Checkout the [LICENSE.md](LICENSE.md).
