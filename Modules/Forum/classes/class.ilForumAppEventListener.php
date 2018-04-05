@@ -221,9 +221,7 @@ class ilForumAppEventListener implements ilAppEventListener
 						 * var $draftObj ilForumPostDraft
 						 */
 						$draftObj   = $a_parameter['draftObj'];
-						$obj_id     = $a_parameter['obj_id'];
-						$is_fileupload_allowed = (bool)$a_parameter['is_file_upload_allowed'];
-						
+
 						$historyObj = new ilForumDraftsHistory();
 						$historyObj->deleteHistoryByDraftIds(array($draftObj->getDraftId()));
 						
@@ -235,9 +233,7 @@ class ilForumAppEventListener implements ilAppEventListener
 						 * var $draftObj ilForumPostDraft
 						 */
 						$draftObj   = $a_parameter['draftObj'];
-						$obj_id     = $a_parameter['obj_id'];
-						$is_fileupload_allowed = (bool)$a_parameter['is_file_upload_allowed'];
-						
+
 						$historyObj = new ilForumDraftsHistory();
 						$historyObj->deleteHistoryByDraftIds(array($draftObj->getDraftId()));
 						
@@ -359,32 +355,21 @@ class ilForumAppEventListener implements ilAppEventListener
 		switch($notification_type)
 		{
 			case ilForumMailNotification::TYPE_POST_ACTIVATION:
-				$mailNotification = new ilForumMailNotification($provider, $logger);
-				$mailNotification->setType($notification_type);
-				$mailNotification->setRecipients($provider->getPostActivationRecipients());
-				$mailNotification->send();
+				$recipients = $provider->getPostActivationRecipients();
 				break;
 
 			case ilForumMailNotification::TYPE_POST_ANSWERED:
-				$mailNotification = new ilForumMailNotification($provider, $logger);
-				$mailNotification->setType($notification_type);
-				$mailNotification->setRecipients($provider->getPostAnsweredRecipients());
-				$mailNotification->send();
+				$recipients = $provider->getPostAnsweredRecipients();
 				break;
 
 			default:
-				// get recipients who wants to get forum notifications
-				$mailNotification = new ilForumMailNotification($provider, $logger);
-				$mailNotification->setType($notification_type);
-				$mailNotification->setRecipients($provider->getForumNotificationRecipients());
-				$mailNotification->send();
-
-				// get recipients who wants to get thread notifications
-				$mailNotification = new ilForumMailNotification($provider, $logger);
-				$mailNotification->setType($notification_type);
-				$mailNotification->setRecipients($provider->getThreadNotificationRecipients());
-				$mailNotification->send();
+				$recipients = $provider->getForumNotificationRecipients();
 				break;
 		}
+
+		$mailNotification = new ilForumMailNotification($provider, $logger);
+		$mailNotification->setType($notification_type);
+		$mailNotification->setRecipients($recipients);
+		$mailNotification->send();
 	}
 }
