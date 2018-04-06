@@ -4,6 +4,7 @@
 include_once './Modules/Forum/interfaces/interface.ilForumNotificationMailData.php';
 include_once './Modules/Forum/classes/class.ilForumProperties.php';
 require_once 'Modules/Forum/classes/class.ilForumAuthorInformation.php';
+require_once  './Modules/Forum/classes/class.ilForumNotificationCache.php';
 
 /**
  * Class ilForumCronNotificationDataProvider
@@ -26,16 +27,6 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 	 * @var int $obj_id
 	 */
 	protected $obj_id = 0;
-
-	/**
-	 * @var string|null $post_user_name
-	 */
-	protected $post_user_name = null;
-
-	/**
-	 * @var string|null $update_user_name
-	 */
-	protected $update_user_name = null;
 
 	/**
 	 * @var int
@@ -140,10 +131,14 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 	 */
 	protected static $authorInformationCache = array();
 
+	/** @var ilForumNotificationCache */
+	private $notificationCache;
+
 	/**
 	 * @param $row
+	 * @param ilForumNotificationCache|null $notificationCache
 	 */
-	public function __construct($row)
+	public function __construct($row, ilForumNotificationCache $notificationCache = null)
 	{
 		$this->obj_id = $row['obj_id'];
 		$this->ref_id = $row['ref_id'];
@@ -170,6 +165,11 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 		$this->pos_author_id = $row['pos_author_id'];
 
 		$this->import_name = strlen($row['import_name']) ? $row['import_name'] : '';
+
+		if ($notificationCache === null) {
+			$notificationCache = new ilForumNotificationCache();
+		}
+		$this->notificationCache = $notificationCache;
 
 		$this->read();
 	}
@@ -413,15 +413,15 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 	 */
 	private function getAuthorInformation(\ilLanguage $lng, $authorUsrId, $displayUserId, $usrAlias, $importName)
 	{
-		$cacheKey = md5(implode('|', array(
+		$cacheKey = $this->notificationCache->createKeyByValues(array(
 			$lng->getLangKey(),
 			(int)$authorUsrId,
 			(int)$displayUserId,
 			(string)$usrAlias,
 			(string)$importName
-		)));
+		));
 
-		if (!array_key_exists($cacheKey, self::$authorInformationCache)) {
+		if (false === $this->notificationCache->exists($cacheKey)) {
 			$authorInformation = new ilForumAuthorInformation(
 				$authorUsrId,
 				$displayUserId,
@@ -431,10 +431,10 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 				$lng
 			);
 
-			self::$authorInformationCache[$cacheKey] = $authorInformation;
+			$this->notificationCache->store($cacheKey, $authorInformation);
 		}
 
-		return self::$authorInformationCache[$cacheKey];
+		return $this->notificationCache->fetch($cacheKey);
 	}
 
 	/**
@@ -442,17 +442,27 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 	 */
 	public function getPostUserName(\ilLanguage $user_lang)
 	{
-		if (null === $this->post_user_name) {
-			$this->post_user_name = $this->getPublicUserInformation(self::getAuthorInformation(
+		$cacheKey = $this->notificationCache->createKeyByValues(array(
+			$user_lang->getLangKey(),
+			(int)$this->getPosAuthorId(),
+			(int)$this->getPosDisplayUserId(),
+			(string)$this->getPosUserAlias(),
+			(string)$this->getImportName()
+		));
+
+		if (false === $this->notificationCache->exists($cacheKey)) {
+			$postUserName = $this->getPublicUserInformation(self::getAuthorInformation(
 				$user_lang,
 				$this->getPosAuthorId(),
 				$this->getPosDisplayUserId(),
 				$this->getPosUserAlias(),
 				$this->getImportName()
 			));
+
+			$this->notificationCache->store($cacheKey, $postUserName);
 		}
 
-		return (string)$this->post_user_name;
+		return $this->notificationCache->fetch($cacheKey);
 	}
 	
 	/**
@@ -460,17 +470,27 @@ class ilForumCronNotificationDataProvider implements ilForumNotificationMailData
 	 */
 	public function getPostUpdateUserName(\ilLanguage $user_lang)
 	{
-		if ($this->update_user_name === null) {
-			$this->update_user_name = $this->getPublicUserInformation(self::getAuthorInformation(
+		$cacheKey = $this->notificationCache->createKeyByValues(array(
+			$user_lang->getLangKey(),
+			(int)$this->getPosAuthorId(),
+			(int)$this->getPostUpdateUserId(),
+			(string)$this->getPosUserAlias(),
+			(string)$this->getImportName()
+		));
+
+		if (false === $this->notificationCache->exists($cacheKey)) {
+			$updateUserName = $this->getPublicUserInformation(self::getAuthorInformation(
 				$user_lang,
 				$this->getPosAuthorId(),
 				$this->getPostUpdateUserId(),
 				$this->getPosUserAlias(),
 				$this->getImportName()
 			));
+
+			$this->notificationCache->store($cacheKey, $updateUserName);
 		}
 
-		return (string)$this->update_user_name;
+		return $this->notificationCache->fetch($cacheKey);
 	}
 	
 	/**
