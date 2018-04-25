@@ -364,26 +364,29 @@ class SurveyImportParserPre38 extends ilSaxParser
 				{
 					if (preg_match("/Questiontype\=(.*)/", $this->characterbuffer, $matches))
 					{
-						$questiontype = $matches[1];
+						$question = null;
 						switch ($matches[1])
 						{
 							case METRIC_QUESTION_IDENTIFIER:
-								$questiontype = "SurveyMetricQuestion";
+								include_once "./Modules/SurveyQuestionPool/classes/class.SurveyMetricQuestion.php";
+								$question = new SurveyMetricQuestion();
 								break;
 							case NOMINAL_QUESTION_IDENTIFIER:
-								$questiontype = "SurveyMultipleChoiceQuestion";
+								include_once "./Modules/SurveyQuestionPool/classes/class.SurveyMultipleChoiceQuestion.php";
+								$question = new SurveyMultipleChoiceQuestion();
 								break;
 							case ORDINAL_QUESTION_IDENTIFIER:
-								$questiontype = "SurveySingleChoiceQuestion";
+								include_once "./Modules/SurveyQuestionPool/classes/class.SurveySingleChoiceQuestion.php";
+								$question = new SurveySingleChoiceQuestion();
 								break;
 							case TEXT_QUESTION_IDENTIFIER:
-								$questiontype = "SurveyTextQuestion";
+								include_once "./Modules/SurveyQuestionPool/classes/class.SurveyTextQuestion.php";
+								$question = new SurveyTextQuestion();
 								break;
 						}
-						if (strlen($questiontype))
+						if ($question !== null)
 						{
-							include_once "./Modules/SurveyQuestionPool/classes/class.$questiontype.php";
-							$this->activequestion = new $questiontype();
+							$this->activequestion = $question;
 							$this->activequestion->setObjId($this->spl_id);
 						}
 						else
