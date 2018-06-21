@@ -173,16 +173,22 @@ class ilForumCronNotification extends ilCronJob
 		$threshold_date =  date('Y-m-d H:i:s', $threshold);
 
 		$this->sendNotificationForNewPosts($threshold_date);
+		$this->keepAlive();
 
 		$this->sendNotificationForUpdatedPosts($threshold_date);
+		$this->keepAlive();
 
 		$this->sendNotificationForCensoredPosts($threshold_date);
+		$this->keepAlive();
 
 		$this->sendNotificationForUncensoredPosts($threshold_date);
+		$this->keepAlive();
 
 		$this->sendNotificationForDeletedThreads();
+		$this->keepAlive();
 
 		$this->sendNotifcationForDeletedPosts();
+		$this->keepAlive();
 
 		$ilSetting->set('cron_forum_notification_last_date', $cj_start_date);
 
@@ -636,7 +642,12 @@ class ilForumCronNotification extends ilCronJob
 			ORDER BY frm_posts_deleted.post_date ASC',
 			array('integer'), array(0));
 
-		$this->sendDeleteNotifcations($res, 'frm_posts_deleted', 'deleted postings', ilForumMailNotification::TYPE_POST_DELETED);
+		$this->sendDeleteNotifcations(
+			$res,
+			'frm_posts_deleted',
+			'deleted postings',
+			ilForumMailNotification::TYPE_POST_DELETED
+		);
 	}
 
 	/**
