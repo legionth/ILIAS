@@ -22431,6 +22431,12 @@ if(!$ilDB->tableExists('certificate_user_template')) {
 
 if(!$ilDB->tableExists('certificate_cron_queue')) {
 	$ilDB->createTable('certificate_cron_queue', array(
+		'id' => array(
+			'type' => 'integer',
+			'length' => 4,
+			'notnull' => true,
+			'default' => 0
+		),
 		'obj_id' => array(
 			'type' => 'integer',
 			'length' => 4,
@@ -22459,6 +22465,6 @@ if(!$ilDB->tableExists('certificate_cron_queue')) {
 		),
 	));
 
-	$ilDB->addUniqueConstraint('certificate_user_template', array('id', 'pattern_certificate_id'));
+	$ilDB->addUniqueConstraint('certificate_user_template', array('id', 'obj_id', 'usr_id'));
 }
 ?>
