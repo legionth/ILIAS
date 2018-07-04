@@ -91,11 +91,16 @@ class ilCertificateGUI
 	protected $toolbar;
 
 	/**
+	 * @var ilCertificateTemplateRepository
+	 */
+	private $templateRepository;
+
+	/**
 	 * ilCertificateGUI constructor
 	 * @param ilCertificateAdapter $adapter A reference to the test container object
 	 * @access public
 	 */
-	public function __construct(ilCertificateAdapter $adapter)
+	public function __construct(ilCertificateAdapter $adapter, ilCertificateTemplateRepository $templateRepository = null)
 	{
 		global $DIC;
 
@@ -112,6 +117,11 @@ class ilCertificateGUI
 		$this->toolbar = $DIC['ilToolbar'];
 
 		$this->ref_id = (int)$_GET['ref_id'];
+
+		if ($templateRepository === null) {
+			$templateRepository = new ilCertificateTemplateRepository($DIC->database());
+		}
+		$this->templateRepository = $templateRepository;
 
 		$this->lng->loadLanguageModule('certificate');
 	}
@@ -460,7 +470,28 @@ class ilCertificateGUI
 				{
 					$xslfo = $this->object->processXHTML2FO($form_fields);
 					$this->object->getAdapter()->saveFormFields($form_fields);
-					$this->object->saveCertificate($xslfo);					
+
+					$adapter = $this->object->getAdapter();
+					$templateValues =$adapter->getCertificateVariablesForPresentation();
+
+					$objId = $adapter->getCertificateID();
+					$version = 1;
+
+					$certificateTemplate = new ilCertificateTemplate(
+						$objId,
+						$xslfo,
+						md5($xslfo),
+						json_encode($templateValues),
+						$version,
+						ILIAS_VERSION_NUMERIC,
+						microtime(),
+						true
+					);
+
+					$this->templateRepository->save($certificateTemplate);
+
+					$this->object->saveCertificate($xslfo);
+
 					$this->object->writeActive($form_fields["active"]);					
 					ilUtil::sendSuccess($this->lng->txt("saved_successfully"), TRUE);
 					$this->ctrl->redirect($this, "certificateEditor");
