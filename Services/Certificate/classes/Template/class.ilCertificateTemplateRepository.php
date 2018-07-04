@@ -18,6 +18,7 @@ class ilCertificateTemplateRepository
 
 	/**
 	 * @param ilCertificateTemplate $certificateTemplate
+	 * @throws ilDatabaseException
 	 */
 	public function save(ilCertificateTemplate $certificateTemplate)
 	{
@@ -43,6 +44,10 @@ class ilCertificateTemplateRepository
 		));
 	}
 
+	/**
+	 * @param $objId
+	 * @return array
+	 */
 	public function fetchCertificateTemplatesByObjId($objId)
 	{
 		$result = array();
@@ -71,6 +76,11 @@ WHERE obj_id = ' . $this->database->quote($objId, 'integer');
 		return $result;
 	}
 
+	/**
+	 * @param $objId
+	 * @return ilCertificateTemplate
+	 * @throws ilException
+	 */
 	public function fetchCurrentlyActiveCertificate($objId)
 	{
 		$sql = '
@@ -98,6 +108,10 @@ AND currently_active = 1
 		throw new ilException('Not certificate template found for obj_id:' . $objId);
 	}
 
+	/**
+	 * @param $objId
+	 * @return int
+	 */
 	private function fetchLatestVersion($objId)
 	{
 		$templates = $this->fetchCertificateTemplatesByObjId($objId);

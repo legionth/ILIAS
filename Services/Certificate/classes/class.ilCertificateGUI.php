@@ -96,12 +96,20 @@ class ilCertificateGUI
 	private $templateRepository;
 
 	/**
+	 * @var ilXlsFoParser
+	 */
+	private $xlsFoParser;
+
+	/**
 	 * ilCertificateGUI constructor
 	 * @param ilCertificateAdapter $adapter A reference to the test container object
 	 * @access public
 	 */
-	public function __construct(ilCertificateAdapter $adapter, ilCertificateTemplateRepository $templateRepository = null)
-	{
+	public function __construct(
+		ilCertificateAdapter $adapter,
+		ilCertificateTemplateRepository $templateRepository = null,
+		ilXlsFoParser $xlsFoParser = null
+	) {
 		global $DIC;
 
 		include_once "./Services/Certificate/classes/class.ilCertificate.php";
@@ -122,6 +130,11 @@ class ilCertificateGUI
 			$templateRepository = new ilCertificateTemplateRepository($DIC->database());
 		}
 		$this->templateRepository = $templateRepository;
+
+		if ($xlsFoParser === null) {
+			$xlsFoParser = new ilXlsFoParser();
+		}
+		$this->xlsFoParser = $xlsFoParser;
 
 		$this->lng->loadLanguageModule('certificate');
 	}
@@ -262,14 +275,21 @@ class ilCertificateGUI
 	*/
 	public function certificateEditor()
 	{
+		$adapter = $this->object->getAdapter();
+		$objId = $adapter->getCertificateID();
+
+		$certificate = $this->templateRepository->fetchCurrentlyActiveCertificate($objId);
+		$content = $certificate->getCertificateContent();
+
 		if(strcmp($this->ctrl->getCmd(), "certificateSave") == 0)
 		{
 			$form_fields = $this->getFormFieldsFromPOST();
 		}
 		else
 		{
-			$form_fields = $this->getFormFieldsFromFO();
+			$form_fields = $this->xlsFoParser->parse($content);
 		}
+
 		include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
 		$form = new ilPropertyFormGUI();
 		$form->setPreventDoubleSubmission(false);
@@ -471,10 +491,8 @@ class ilCertificateGUI
 					$xslfo = $this->object->processXHTML2FO($form_fields);
 					$this->object->getAdapter()->saveFormFields($form_fields);
 
-					$adapter = $this->object->getAdapter();
 					$templateValues =$adapter->getCertificateVariablesForPresentation();
 
-					$objId = $adapter->getCertificateID();
 					$version = 1;
 
 					$certificateTemplate = new ilCertificateTemplate(
