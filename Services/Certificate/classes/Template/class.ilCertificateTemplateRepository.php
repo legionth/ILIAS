@@ -91,8 +91,19 @@ AND currently_active = 1
 
 		$query = $this->database->query($sql);
 
+		$template =  new ilCertificateTemplate(
+			0,
+			'',
+			'',
+			'',
+			'',
+			'',
+			0,
+			false
+		);
+
 		while ($row = $this->database->fetchAssoc($query)) {
-			return new ilCertificateTemplate(
+			$template =  new ilCertificateTemplate(
 				$row['obj_id'],
 				$row['certificate_content'],
 				$row['certificate_hash'],
@@ -105,7 +116,7 @@ AND currently_active = 1
 			);
 		}
 
-		throw new ilException('Not certificate template found for obj_id:' . $objId);
+		return $template;
 	}
 
 	/**

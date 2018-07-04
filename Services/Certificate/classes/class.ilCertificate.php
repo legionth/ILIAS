@@ -68,12 +68,18 @@ class ilCertificate
 	 * @var bool
 	 */
 	protected static $is_active;
-	
+
+	/**
+	 * @var ilCertificateTemplateRepository|null
+	 */
+	private $templateRepository;
+
 	/**
 	 * ilCertificate constructor
 	 * @param ilCertificateAdapter $adapter The certificate adapter needed to construct the certificate
+	 * @param ilCertificateTemplateRepository|null $templateRepository
 	 */
-	public function __construct(ilCertificateAdapter $adapter)
+	public function __construct(ilCertificateAdapter $adapter, ilCertificateTemplateRepository $templateRepository = null)
 	{
 		global $DIC;
 
@@ -86,6 +92,11 @@ class ilCertificate
 		$this->db       = $DIC['ilDB'];
 
 		$this->adapter = $adapter;
+
+		if ($templateRepository === null) {
+			$templateRepository = new ilCertificateTemplateRepository($DIC->database());
+		}
+		$this->templateRepository = $templateRepository;
 	}
 
 	/**
@@ -762,10 +773,15 @@ class ilCertificate
 		include_once "./Services/Utilities/classes/class.ilUtil.php";
 		$exportpath = $this->createArchiveDirectory();
 		ilUtil::makeDir($exportpath);
-		$xsl = file_get_contents($this->getXSLPath());
-		$xslexport = str_replace($this->getAdapter()->getCertificatePath(), "", $xsl);
+
+		$adapter = $this->getAdapter();
+		$objId = $adapter->getCertificateID();
+
+		$certificate = $this->templateRepository->fetchCurrentlyActiveCertificate($objId);
+		$xslExport = $certificate->getCertificateContent();
+
 		// save export xsl file
-		$this->saveCertificate($xslexport, $exportpath . $this->getXSLName());
+		$this->saveCertificate($xslExport, $exportpath . $this->getXSLName());
 		// save background image
 		if ($this->hasBackgroundImage())
 		{
@@ -779,17 +795,20 @@ class ilCertificate
 				copy(ilObjCertificateSettingsAccess::getBackgroundImagePath(), $exportpath . ilObjCertificateSettingsAccess::getBackgroundImageName());
 			}
 		}
+
 		$zipfile = time() . "__" . IL_INST_ID . "__" . $this->getAdapter()->getAdapterType() . "__" . $this->getAdapter()->getCertificateId() . "__certificate.zip";
+
 		ilUtil::zip($exportpath, $this->getAdapter()->getCertificatePath() . $zipfile);
 		ilUtil::delDir($exportpath);
 		ilUtil::deliverFile($this->getAdapter()->getCertificatePath() . $zipfile, $zipfile, "application/zip");
 	}
-	
+
 	/**
-	* Reads an import ZIP file and creates a certificate of it
-	*
-	* @return boolean TRUE if the import succeeds, FALSE otherwise
-	*/
+	 * Reads an import ZIP file and creates a certificate of it
+	 *
+	 * @return boolean TRUE if the import succeeds, FALSE otherwise
+	 * @throws ilException
+	 */
 	public function importCertificate($zipfile, $filename)
 	{
 		include_once "./Services/Utilities/classes/class.ilUtil.php";
@@ -850,7 +869,23 @@ class ilCertificate
 							
 							return 'url(' . $basePath . '/' . $fileName . ')';
 						}, $xsl);
-						$this->saveCertificate($xsl);
+
+						$objId = $this->adapter->getCertificateID();
+
+						$this->templateRepository->fetchCurrentlyActiveCertificate($objId);
+
+						$template = new ilCertificateTemplate(
+							$objId,
+							$xsl,
+							md5($xsl),
+							$this->adapter->getCertificateVariablesForPresentation(),
+							'1',
+							ILIAS_VERSION_NUMERIC,
+							microtime(),
+							true
+						);
+
+						$this->templateRepository->save($template);
 					}
 					else if (strpos($file["entry"], ".zip") !== FALSE)
 					{

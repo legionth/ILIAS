@@ -491,7 +491,7 @@ class ilCertificateGUI
 					$xslfo = $this->object->processXHTML2FO($form_fields);
 					$this->object->getAdapter()->saveFormFields($form_fields);
 
-					$templateValues =$adapter->getCertificateVariablesForPresentation();
+					$templateValues = $adapter->getCertificateVariablesForPresentation();
 
 					$version = 1;
 
@@ -508,9 +508,7 @@ class ilCertificateGUI
 
 					$this->templateRepository->save($certificateTemplate);
 
-					$this->object->saveCertificate($xslfo);
-
-					$this->object->writeActive($form_fields["active"]);					
+					$this->object->writeActive($form_fields["active"]);
 					ilUtil::sendSuccess($this->lng->txt("saved_successfully"), TRUE);
 					$this->ctrl->redirect($this, "certificateEditor");
 				}
