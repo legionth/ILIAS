@@ -4,12 +4,12 @@
 class ilCertificateTemplateRepository
 {
 	/**
-	 * @var ilDB
+	 * @var ilDBInterface
 	 */
 	private $database;
 
 	/**
-	 * @param ilDB $database
+	 * @param ilDBInterface $database
 	 */
 	public function __construct(\ilDBInterface $database)
 	{
