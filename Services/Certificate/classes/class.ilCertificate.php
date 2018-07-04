@@ -878,7 +878,7 @@ class ilCertificate
 							$objId,
 							$xsl,
 							md5($xsl),
-							$this->adapter->getCertificateVariablesForPresentation(),
+							json_encode($this->adapter->getCertificateVariablesForPresentation()),
 							'1',
 							ILIAS_VERSION_NUMERIC,
 							microtime(),
