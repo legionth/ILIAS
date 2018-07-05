@@ -14,19 +14,19 @@ class ilCertificateCron
 	private $templateRepository;
 
 	/**
-	 * @var ilUserCertificateTemplateRepository
+	 * @var ilUserCertificateRepository
 	 */
 	private $userRepository;
 
 	/**
 	 * @param ilCertificateQueueRepository $queueRepository
 	 * @param ilCertificateTemplateRepository $templateRepository
-	 * @param ilUserCertificateTemplateRepository $userRepository
+	 * @param ilUserCertificateRepository $userRepository
 	 */
 	public function __construct(
 		ilCertificateQueueRepository $queueRepository,
 		ilCertificateTemplateRepository $templateRepository,
-		ilUserCertificateTemplateRepository $userRepository
+		ilUserCertificateRepository $userRepository
 	) {
 		$this->queueRepository = $queueRepository;
 		$this->templateRepository = $templateRepository;
@@ -65,7 +65,7 @@ class ilCertificateCron
 				$certificateContent = str_replace('[' . $placeholder . ']', $value, $certificateContent );
 			}
 
-			$userCertificate = new ilUserCertificateTemplate(
+			$userCertificate = new ilUserCertificate(
 				$template->getId(),
 				$objId,
 				$type,
