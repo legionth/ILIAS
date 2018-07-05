@@ -362,21 +362,7 @@ class ilCertificateGUI
 		$bgimage = new ilImageFileInputGUI($this->lng->txt("certificate_background_image"), "background");
 		$bgimage->setRequired(FALSE);
 		$bgimage->setUseCache(false);
-		if (count($_POST)) 
-		{
-			// handle the background upload
-			if (strlen($_FILES["background"]["tmp_name"]))
-			{
-				if ($bgimage->checkInput())
-				{
-					$result = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
-					if ($result == FALSE)
-					{
-						$bgimage->setAlert($this->lng->txt("certificate_error_upload_bgimage"));
-					}
-				}
-			}
-		}
+
 		if (!$this->object->hasBackgroundImage())
 		{
 			include_once "./Services/Certificate/classes/class.ilObjCertificateSettingsAccess.php";
@@ -484,6 +470,7 @@ class ilCertificateGUI
 			{
 				$this->object->deleteBackgroundImage();
 			}
+
 			if ($form->checkInput())
 			{
 				try
@@ -494,6 +481,23 @@ class ilCertificateGUI
 					$templateValues = $adapter->getCertificateVariablesForPresentation();
 
 					$version = 1;
+
+					if (count($_POST))
+					{
+						// handle the background upload
+						if (strlen($_FILES["background"]["tmp_name"]))
+						{
+							if ($bgimage->checkInput())
+							{
+								try {
+									$result = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
+								}
+								catch (ilException $exception) {
+									$bgimage->setAlert($this->lng->txt("certificate_error_upload_bgimage"));
+								}
+							}
+						}
+					}
 
 					$certificateTemplate = new ilCertificateTemplate(
 						$objId,

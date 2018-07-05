@@ -126,29 +126,30 @@ class ilObjCertificateSettings extends ilObject
 	}
 
 	/**
-	* Uploads a background image for the certificate. Creates a new directory for the
-	* certificate if needed. Removes an existing certificate image if necessary
-	*
-	* @param string $image_tempfilename Name of the temporary uploaded image file
-	* @return integer An errorcode if the image upload fails, 0 otherwise
-	*/
+	 * Uploads a background image for the certificate. Creates a new directory for the
+	 * certificate if needed. Removes an existing certificate image if necessary
+	 *
+	 * @param string $image_tempfilename Name of the temporary uploaded image file
+	 * @return integer An errorcode if the image upload fails, 0 otherwise
+	 * @throws ilException
+	 */
 	public function uploadBackgroundImage($image_tempfilename)
 	{
 		if (!empty($image_tempfilename))
 		{
 			$convert_filename = $this->getBackgroundImageName();
-			$imagepath = $this->getBackgroundImageDefaultFolder();
+			$imagepath = $this->getAdapter()->getCertificatePath();
 			if (!file_exists($imagepath))
 			{
 				ilUtil::makeDirParents($imagepath);
 			}
 			// upload the file
 			if (!ilUtil::moveUploadedFile(
-					$image_tempfilename,
-					basename($this->getBackgroundImageTempfilePath()),
-					$this->getBackgroundImageTempfilePath()
+				$image_tempfilename,
+				basename($this->getBackgroundImageTempfilePath()),
+				$this->getBackgroundImageTempfilePath()
 			)) {
-				return FALSE;
+				throw new ilException('Unable to move file');
 			}
 			// convert the uploaded file to JPEG
 			ilUtil::convertImage($this->getBackgroundImageTempfilePath(), $this->getBackgroundImagePath(), "JPEG");
@@ -158,16 +159,17 @@ class ilObjCertificateSettings extends ilObject
 				// something went wrong converting the file. use the original file and hope, that PDF can work with it
 				if (!ilUtil::moveUploadedFile($this->getBackgroundImageTempfilePath(), $convert_filename, $this->getBackgroundImagePath()))
 				{
-					return FALSE;
+					throw new ilException('Unable to convert the file and the original file');
 				}
 			}
 			unlink($this->getBackgroundImageTempfilePath());
 			if (file_exists($this->getBackgroundImagePath()) && (filesize($this->getBackgroundImagePath()) > 0))
 			{
-				return TRUE;
+				return $this->getBackgroundImagePath();
 			}
 		}
-		return FALSE;
+
+		throw new ilException('The given temporary filename is empty');
 	}
 
 	/**

@@ -161,9 +161,10 @@ class ilObjCertificateSettingsGUI extends ilObjectGUI
 			{
 				if ($bgimage->checkInput())
 				{
-					$result = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
-					if ($result == FALSE)
-					{
+					try {
+						$result = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
+					}
+					catch (ilException $exception) {
 						$bgimage->setAlert($this->lng->txt("certificate_error_upload_bgimage"));
 					}
 				}
