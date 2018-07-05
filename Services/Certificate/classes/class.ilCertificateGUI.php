@@ -482,6 +482,7 @@ class ilCertificateGUI
 
 					$version = 1;
 
+					$backgroundImagePath = null;
 					if (count($_POST))
 					{
 						// handle the background upload
@@ -490,7 +491,7 @@ class ilCertificateGUI
 							if ($bgimage->checkInput())
 							{
 								try {
-									$result = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
+									$backgroundImagePath = $this->object->uploadBackgroundImage($_FILES["background"]["tmp_name"]);
 								}
 								catch (ilException $exception) {
 									$bgimage->setAlert($this->lng->txt("certificate_error_upload_bgimage"));
@@ -507,12 +508,13 @@ class ilCertificateGUI
 						$version,
 						ILIAS_VERSION_NUMERIC,
 						microtime(),
-						true
+						true,
+						$backgroundImagePath,
+						$form_fields['active']
 					);
 
 					$this->templateRepository->save($certificateTemplate);
 
-					$this->object->writeActive($form_fields["active"]);
 					ilUtil::sendSuccess($this->lng->txt("saved_successfully"), TRUE);
 					$this->ctrl->redirect($this, "certificateEditor");
 				}
