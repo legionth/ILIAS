@@ -14,7 +14,7 @@ class ilCronStartUp
 	private $username = '';
 	private $password = '';
 
-	/** @var ilAuthSession|mixed|null */
+	/** @var ilAuthSession */
 	private $authSession;
 
 	/**
@@ -27,16 +27,12 @@ class ilCronStartUp
 		$a_client_id,
 		$a_login,
 		$a_password,
-		\ilAuthSession $authSession = null
+		ilAuthSession $authSession
 	) {
 		$this->client = $a_client_id;
 		$this->username = $a_login;
 		$this->password = $a_password;
 
-		if ($authSession) {
-			global $DIC;
-			$authSession = $DIC['ilAuthSession'];
-		}
 		$this->authSession = $authSession;
 	}
 	
@@ -80,6 +76,7 @@ class ilCronStartUp
 		include_once './Services/Authentication/classes/Frontend/class.ilAuthFrontendFactory.php';
 		$frontend_factory = new ilAuthFrontendFactory();
 		$frontend_factory->setContext(ilAuthFrontendFactory::CONTEXT_CLI);
+
 		$frontend = $frontend_factory->getFrontend(
 			$this->authSession,
 			$status,
