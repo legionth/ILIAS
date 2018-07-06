@@ -41,7 +41,7 @@ class ilCertificateCron
 			/** @var $entry ilCertificateQueueEntry */
 			$class = $entry->getAdapterClass();
 			$adapter = new $class();
-			if (!$adapter instanceof ilCertificateCronAdapter) {
+			if (!$adapter instanceof ilCertificatePlaceholderValues) {
 				throw new ilException('The given class ' . $class . ' MUST be an instance of ilCertificateCronAdapter.');
 			}
 
