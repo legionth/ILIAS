@@ -75,12 +75,21 @@ class ilCertificate
 	private $templateRepository;
 
 	/**
+	 * @var ilUserCertificateRepository|null
+	 */
+	private $certificateRepository;
+
+	/**
 	 * ilCertificate constructor
 	 * @param ilCertificateAdapter $adapter The certificate adapter needed to construct the certificate
 	 * @param ilCertificateTemplateRepository|null $templateRepository
+	 * @param ilUserCertificateRepository|null $certificateRepository
 	 */
-	public function __construct(ilCertificateAdapter $adapter, ilCertificateTemplateRepository $templateRepository = null)
-	{
+	public function __construct(
+		ilCertificateAdapter $adapter,
+		ilCertificateTemplateRepository $templateRepository = null,
+		ilUserCertificateRepository $certificateRepository = null
+	) {
 		global $DIC;
 
 		$this->lng      = $DIC['lng'];
@@ -97,6 +106,11 @@ class ilCertificate
 			$templateRepository = new ilCertificateTemplateRepository($DIC->database());
 		}
 		$this->templateRepository = $templateRepository;
+
+		if ($certificateRepository === null) {
+			$certificateRepository = new ilUserCertificateRepository($DIC->database());
+		}
+		$this->certificateRepository = $certificateRepository;
 	}
 
 	/**
@@ -496,38 +510,66 @@ class ilCertificate
 	{
 		ilDatePresentation::setUseRelativeDates(false);
 		$insert_tags = $this->getAdapter()->getCertificateVariablesForPresentation($params);
-		
-		include_once("./Services/User/classes/class.ilUserDefinedData.php");
+
 		$cust_data = new ilUserDefinedData($this->getAdapter()->getUserIdForParams($params));
 		$cust_data = $cust_data->getAll();
-		foreach (self::getCustomCertificateFields() as $k => $f)
-		{
+
+		foreach (self::getCustomCertificateFields() as $k => $f)  {
 			$insert_tags[$f["ph"]] = ilUtil::prepareFormOutput($cust_data["f_".$k]);
 		}
 
-		$xslfo = file_get_contents($this->getXSLPath());
+//		$xslfo = file_get_contents($this->getXSLPath());
 
-        // render tex as fo graphics
-		require_once('Services/MathJax/classes/class.ilMathJax.php');
+		$objId = $this->getAdapter()->getCertificateID();
+
+		/** @var ilObject $object */
+		$object = ilObjectFactory::getInstanceByObjId($objId);
+
+		/** @var ilObjUser $user */
+		$user = ilObjectFactory::getInstanceByObjId($params['user_id']);
+
+		$template = $this->templateRepository->fetchCurrentlyActiveCertificate($objId);
+
+		// render tex as fo graphics
 		$xslfo = ilMathJax::getInstance()
 			->init(ilMathJax::PURPOSE_PDF)
 			->setRendering(ilMathJax::RENDER_PNG_AS_FO_FILE)
-			->insertLatexImages($xslfo);
+			->insertLatexImages($template->getCertificateContent());
 
-		include_once './Services/WebServices/RPC/classes/class.ilRpcClientFactory.php';
-		try
-		{
-			$pdf_base64 = ilRpcClientFactory::factory('RPCTransformationHandler')->ilFO2PDF(
-				$this->exchangeCertificateVariables($xslfo, $insert_tags));
-			if ($deliver)
-			{
-				include_once "./Services/Utilities/classes/class.ilUtil.php";
-				ilUtil::deliverData($pdf_base64->scalar, $this->getAdapter()->getCertificateFilename($params), "application/pdf");
+		try {
+			$fo_string = $this->exchangeCertificateVariables($xslfo, $insert_tags);
+
+			$backgroundImagePath = $this->getAdapter()->getCertificatePath() . $this->getBackgroundImageName();
+
+			$userCertificate = new ilUserCertificate(
+				$template->getId(),
+				$objId,
+				$object->getType(),
+				$user->getId(),
+				$user->getFullname(),
+				time(),
+				$fo_string,
+				$template->getTemplateValues(),
+				null,
+				1,
+				ILIAS_VERSION_NUMERIC,
+				true,
+				$backgroundImagePath
+			);
+
+			$this->certificateRepository->save($userCertificate);
+
+			$pdf_base64 = ilRpcClientFactory::factory('RPCTransformationHandler')->ilFO2PDF($fo_string);
+
+			if ($deliver) {
+				ilUtil::deliverData(
+					$pdf_base64->scalar,
+					$this->getAdapter()->getCertificateFilename($params),
+					"application/pdf"
+				);
 			}
-			else
-			{
-				return $pdf_base64->scalar;
-			}
+
+			return $pdf_base64->scalar;
 		}
 		catch(Exception $e)
 		{
@@ -536,7 +578,6 @@ class ilCertificate
 		}
 
 		ilDatePresentation::setUseRelativeDates(true);
-		
 	}
 
 	/**
@@ -883,7 +924,7 @@ class ilCertificate
 							json_encode($this->adapter->getCertificateVariablesForPresentation()),
 							'1',
 							ILIAS_VERSION_NUMERIC,
-							microtime(),
+							time(),
 							true
 						);
 

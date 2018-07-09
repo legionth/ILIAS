@@ -132,7 +132,7 @@ class ilCertificateGUI
 		$this->templateRepository = $templateRepository;
 
 		if ($xlsFoParser === null) {
-			$xlsFoParser = new ilXlsFoParser();
+			$xlsFoParser = new ilXlsFoParser($adapter);
 		}
 		$this->xlsFoParser = $xlsFoParser;
 
@@ -281,13 +281,11 @@ class ilCertificateGUI
 		$certificate = $this->templateRepository->fetchCurrentlyActiveCertificate($objId);
 		$content = $certificate->getCertificateContent();
 
-		if(strcmp($this->ctrl->getCmd(), "certificateSave") == 0)
-		{
+		if(strcmp($this->ctrl->getCmd(), "certificateSave") == 0) {
 			$form_fields = $this->getFormFieldsFromPOST();
-		}
-		else
-		{
+		} else {
 			$form_fields = $this->xlsFoParser->parse($content);
+			$form_fields["active"] = $this->object->readActive();
 		}
 
 		include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
@@ -423,7 +421,7 @@ class ilCertificateGUI
 		"span",
 		"strong",
 		"u",
-		"ul"	
+		"ul"
 		);
 		$certificate->setRteTags($tags);
 		if (strcmp($this->ctrl->getCmd(), "certificateSave") == 0) $certificate->checkInput();
@@ -507,13 +505,15 @@ class ilCertificateGUI
 						json_encode($templateValues),
 						$version,
 						ILIAS_VERSION_NUMERIC,
-						microtime(),
+						time(),
 						true,
 						$backgroundImagePath,
 						$form_fields['active']
 					);
 
 					$this->templateRepository->save($certificateTemplate);
+
+					$this->object->writeActive($form_fields['active']);
 
 					ilUtil::sendSuccess($this->lng->txt("saved_successfully"), TRUE);
 					$this->ctrl->redirect($this, "certificateEditor");
