@@ -94,16 +94,7 @@ class ilForumModerators
 	 */
 	public function getCurrentModerators()
 	{
-		$roles = $this->rbac->review()->getRoleListByObject($this->getRefId());
-		foreach($roles as $role)
-		{
-			if(strpos($role['title'], 'il_frm_moderator') !== false)
-			{
-				$assigned_users = $this->rbac->review()->assignedUsers($role['rol_id']);
-				break;
-			}
-		}
-		return is_array($assigned_users) ? $assigned_users : array();
+		return $this->createAssignedUserArray();
 	}
 	
 	/**
@@ -111,16 +102,25 @@ class ilForumModerators
 	 */
 	public function getUsers()
 	{
+		return $this->createAssignedUserArray();
+	}
+
+	/**
+	 * @param $roles
+	 * @return array
+	 */
+	private function createAssignedUserArray(): array
+	{
 		$roles = $this->rbac->review()->getRoleListByObject($this->getRefId());
-		foreach($roles as $role)
-		{
-			if(strpos($role['title'], 'il_frm_moderator') !== false)
-			{
+
+		$assigned_users = array();
+		foreach ($roles as $role) {
+			if (strpos($role['title'], 'il_frm_moderator') !== false) {
 				$assigned_users = $this->rbac->review()->assignedUsers($role['rol_id']);
-				//vd($assigned_users);
 				break;
 			}
 		}
-		return is_array($assigned_users) ? $assigned_users : array();
+
+		return $assigned_users;
 	}
 }
