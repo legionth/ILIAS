@@ -228,16 +228,13 @@ class ilFileDataForum extends ilFileData
 				// remove trailing '/'
 				$name = rtrim($name, '/');
 
-				$filename = ilUtil::_sanitizeFilemame($name);				
+				$filename = ilUtil::_sanitizeFilemame($name);
 				$temp_name = $files['tmp_name'][$index];
 				$error = $files['error'][$index];
 				
 				if(strlen($filename) && strlen($temp_name) && $error == 0)
-				{				
-					$path = $this->getForumPath().'/'.$this->obj_id.'_'.$this->pos_id.'_'.$filename;
-					
-					$this->__rotateFiles($path);
-					ilUtil::moveUploadedFile($temp_name, $filename, $path);				
+				{
+					$this->moveUploadedFiles($filename, $temp_name);
 				}
 			}
 			
@@ -250,11 +247,8 @@ class ilFileDataForum extends ilFileData
 				
 			$filename = ilUtil::_sanitizeFilemame($files['name']);
 			$temp_name = $files['tmp_name'];
-			
-			$path = $this->getForumPath().'/'.$this->obj_id.'_'.$this->pos_id.'_'.$filename;
-			
-			$this->__rotateFiles($path);
-			ilUtil::moveUploadedFile($temp_name, $filename, $path);
+
+			$this->moveUploadedFiles($filename, $temp_name);
 			
 			return true;
 		}
@@ -512,5 +506,18 @@ class ilFileDataForum extends ilFileData
 		}
 
 		return $zip_file;
+	}
+
+	/**
+	 * @param $filename
+	 * @param $temp_name
+	 * @throws ilException
+	 */
+	private function moveUploadedFiles($filename, $temp_name): void
+	{
+		$path = $this->getForumPath() . '/' . $this->obj_id . '_' . $this->pos_id . '_' . $filename;
+
+		$this->__rotateFiles($path);
+		ilUtil::moveUploadedFile($temp_name, $filename, $path);
 	}
 }
