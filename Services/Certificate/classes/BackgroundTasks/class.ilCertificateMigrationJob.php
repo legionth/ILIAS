@@ -55,6 +55,19 @@ class ilCertificateMigrationJob extends AbstractJob
 	/** @var ilLogger */
 	private $logger;
 
+	/** @var \ILIAS\DI\Container */
+	private $dic;
+
+	public function __construct()
+	{
+		$dic = null;
+		if (null === $dic) {
+			global $DIC;
+			$dic = $DIC;
+		}
+		$this->dic = $dic;
+	}
+
 	/**
 	 * @param \ILIAS\BackgroundTasks\Value[] $input
 	 * @param Observer                       $observer
@@ -63,16 +76,14 @@ class ilCertificateMigrationJob extends AbstractJob
 	 */
 	public function run(Array $input, Observer $observer): \ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\IntegerValue
 	{
-		global $DIC;
-
 		$this->user_id = $input[0]->getValue();
 
-		$this->tree = $DIC->repositoryTree();
-		$this->db = $DIC->database();
+		$this->tree = $this->dic->repositoryTree();
+		$this->db = $this->dic->database();
 		$this->db_table = \ilCertificateMigrationJobDefinitions::CERT_MIGRATION_JOB_TABLE;
-		$this->event_handler = $DIC['ilAppEventHandler'];
-		$this->task_factory = $DIC->backgroundTasks()->taskFactory();
-		$this->logger = $DIC->logger()->cert();
+		$this->event_handler = $this->dic['ilAppEventHandler'];
+		$this->task_factory = $this->dic->backgroundTasks()->taskFactory();
+		$this->logger = $this->dic->logger()->cert();
 
 		$certificates = [];
 		$output = new IntegerValue();
@@ -222,7 +233,7 @@ class ilCertificateMigrationJob extends AbstractJob
 			'state' => \ilCertificateMigrationJobDefinitions::CERT_MIGRATION_STATE_FINISHED
 		]);
 
-		$DIC->user()->writePref('cert_migr_finished', 1);
+		$this->dic->user()->writePref('cert_migr_finished', 1);
 
 		return $output;
 	}
@@ -270,9 +281,7 @@ class ilCertificateMigrationJob extends AbstractJob
 	 */
 	public function getTaskInformations(): array
 	{
-		global $DIC;
-
-		$db = $DIC->database();
+		$db = $this->dic->database();
 
 		$result = $db->queryF(
 			'SELECT * FROM ' . $this->db_table . ' WHERE usr_id = %s',
@@ -285,6 +294,15 @@ class ilCertificateMigrationJob extends AbstractJob
 			return $data;
 		}
 		return [];
+	}
+
+	/**
+	 * @internal For unit tests only
+	 * @param \ILIAS\DI\Container $dic
+	 */
+	public function setDIC(\ILIAS\DI\Container $dic)
+	{
+		$this->dic = $dic;
 	}
 
 	/**
