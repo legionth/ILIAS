@@ -35,6 +35,7 @@ for 'Certificates' to their component.
 * [Migration](#migration)
   * [Certificate Templates](#certificate-templates)
   * [User Certificates](#user-certificates)
+* [Verification Objects](#verification-objects)
 
 ## General
 
@@ -461,3 +462,11 @@ User certificates will be imported per user via a background
 task.
 This background task, will be executed by the user via the
 [GUI](#gui).
+
+## Verification Objects
+
+Verification Objects can be created and added to the users personal workspace.
+Caused by the history of this project only **existing** objects can be created
+as verification object.
+Creation of non-existing objects will be done in a future release of this
+Module.
