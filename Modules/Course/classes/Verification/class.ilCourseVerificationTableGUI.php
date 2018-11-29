@@ -58,11 +58,9 @@ class ilCourseVerificationTableGUI extends ilTable2GUI
 
 		$ilUser = $DIC['ilUser'];
 
-		$data = array();
-
 		$userId = $ilUser->getId();
 
-		$certificateArray = $this->userCertificateRepository->fetchActiveCertificatesByTypeForPresentation($userId, 'crs');
+		$certificateArray = $this->userCertificateRepository->fetchActiveCertificateOfExistingObjectsForPresentation($userId, 'crs');
 
 		$data = array();
 		foreach ($certificateArray as $certificate) {

@@ -69,7 +69,7 @@ class ilExerciseVerificationTableGUI extends ilTable2GUI
 		$userId = $ilUser->getId();
 
 		$certificateArray = $this->userCertificateRepository
-			->fetchActiveCertificatesByTypeForPresentation($userId, 'exc');
+			->fetchActiveCertificateOfExistingObjectsForPresentation($userId, 'exc');
 
 		$data = array();
 

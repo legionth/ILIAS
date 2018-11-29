@@ -63,7 +63,7 @@ class ilTestVerificationTableGUI extends ilTable2GUI
 
 		$userId = $ilUser->getId();
 
-		$certificateArray = $this->userCertificateRepository->fetchActiveCertificatesByTypeForPresentation($userId, 'tst');
+		$certificateArray = $this->userCertificateRepository->fetchActiveCertificateOfExistingObjectsForPresentation($userId, 'tst');
 
 		$data = array();
 		foreach ($certificateArray as $certificate) {

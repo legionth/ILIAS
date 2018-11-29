@@ -62,8 +62,7 @@ class ilObjCourseVerification extends ilVerificationObject
 			$lng->txt('error_creating_certificate_pdf')
 		);
 
-		$certificate = $pdfAction->createPDF(
-			$a_user_id, $a_course->getid());
+		$certificate = $pdfAction->createPDF($a_user_id, $a_course->getid());
 
 		// save pdf file
 		if($certificate)
