@@ -349,11 +349,8 @@ class ilTestEvaluationGUI extends ilTestServiceGUI
 			);
 			
 			if(!$this->object->getAnonymity()) {
-				$factory = new ilCertificateFactory();
-
-				$certificate = $factory->create($this->object);
-
-				if($certificate->isComplete(new ilTestCertificateAdapter($this->object))) {
+				$validator = new ilCertificateActiveValidator();
+				if(true === $validator->validate()) {
 					$options['certificate'] = $this->lng->txt('exp_type_certificate');
 				}
 			}
