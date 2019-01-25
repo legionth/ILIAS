@@ -6292,7 +6292,6 @@ class ilObjSurvey extends ilObject
 
 		// #10044
 		$mail = new ilMail(ANONYMOUS_USER_ID);
-		$mail->enableSOAP(false); // #10410
 		$mail->sendMail(ilObjUser::_lookupLogin($a_user_id),
 			null,
 			null,
