@@ -76,12 +76,17 @@ class ilMimeMail
 	/**
 	 * @var \ilMailMimeSender
 	 */
-	protected $sender; 
+	protected $sender;
 
 	/**
-	 * ilMimeMail constructor.
+	 * @var ilMailSubject|null
 	 */
-	public function __construct()
+	private $mailSubject;
+
+	/**
+	 * @param ilMailSubject|null $mailSubject
+	 */
+	public function __construct(ilMailSubject $mailSubject = null)
 	{
 		global $DIC;
 
@@ -90,6 +95,11 @@ class ilMimeMail
 			$factory = $DIC["mail.mime.transport.factory"];
 			self::setDefaultTransport($factory->getTransport());
 		}
+
+		if (null === $mailSubject) {
+			$mailSubject = new ilMailSubject($DIC->settings());
+		}
+		$this->mailSubject = $mailSubject;
 	}
 
 	/**
@@ -122,13 +132,9 @@ class ilMimeMail
 	 */
 	public function Subject($subject, $a_add_prefix = false)
 	{
-		if($a_add_prefix)
-		{
-			// #9096
-			require_once 'Services/Mail/classes/class.ilMail.php';
-			$prefix = ilMail::getSubjectPrefix();
-			if(trim($prefix))
-			{
+		if($a_add_prefix) {
+			$prefix = $this->mailSubject->getSubjectPrefix();
+			if(trim($prefix)) {
 				$subject = trim($prefix) . ' ' . $subject;
 			}
 		}

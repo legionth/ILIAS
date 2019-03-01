@@ -13,8 +13,6 @@ class ilMail
 	/** @var string */
 	const ILIAS_HOST = 'ilias';
 
-	const MAIL_SUBJECT_PREFIX = '[ILIAS]';
-
 	/** @var ilLanguage */
 	protected $lng;
 
@@ -77,6 +75,11 @@ class ilMail
 	protected $contextParameters = [];
 
 	/**
+	 * @var ilMailSubject
+	 */
+	private $mailSubject;
+
+	/**
 	 * @param integer                               $a_user_id
 	 * @param ilMailAddressTypeFactory|null         $mailAddressTypeFactory
 	 * @param ilMailRfc822AddressParserFactory|null $mailAddressParserFactory
@@ -86,7 +89,8 @@ class ilMail
 		$a_user_id,
 		ilMailAddressTypeFactory $mailAddressTypeFactory = null,
 		ilMailRfc822AddressParserFactory $mailAddressParserFactory = null,
-		\ilAppEventHandler $eventHandler = null
+		\ilAppEventHandler $eventHandler = null,
+		ilMailSubject $mailSubject = null
 	) {
 		global $DIC;
 
@@ -104,6 +108,11 @@ class ilMail
 		if ($eventHandler === null) {
 			$eventHandler = $DIC->event();
 		}
+
+		if ($mailSubject === null) {
+			$mailSubject = new ilMailSubject($DIC->settings());
+		}
+		$this->mailSubject = $mailSubject;
 
 		$this->mailAddressParserFactory = $mailAddressParserFactory;
 		$this->mailAddressTypeFactory = $mailAddressTypeFactory;
@@ -1416,7 +1425,7 @@ class ilMail
 	 */
 	public function sendMimeMail($a_rcp_to, $a_rcp_cc, $a_rcp_bcc, $a_m_subject, $a_m_message, $a_attachments)
 	{
-		$subjectPrefix = self::getSubjectPrefix();
+		$subjectPrefix = $this->mailSubject->getSubjectPrefix();
 
 		if ('' !== $subjectPrefix) {
 			$subjectPrefix = $subjectPrefix . ' ';
@@ -1628,22 +1637,6 @@ class ilMail
 		}
 
 		return $signature;
-	}
-
-	/**
-	 * Get text that will be prepended to auto generated mails
-	 * @return string subject prefix
-	 */
-	public static function getSubjectPrefix()
-	{
-		global $DIC;
-
-		$subjectPrefix = $DIC->settings()->get('mail_subject_prefix');
-		if (false === $subjectPrefix) {
-			$subjectPrefix = self::MAIL_SUBJECT_PREFIX;
-		}
-
-		return $subjectPrefix;
 	}
 
 	/**
