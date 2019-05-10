@@ -12,7 +12,7 @@ use ILIAS\UI\Component\Signal;
 use ILIAS\UI\Implementation\Component\Input\InputData;
 use ILIAS\UI\Implementation\Component\Input\NameSource;
 use ILIAS\UI\Implementation\Component\ComponentHelper;
-use ILIAS\Refinery\Transformation\Transformation;
+use ILIAS\Refinery\Transformation;
 use ILIAS\Refinery\Transformation\Factory as TransformationFactory;
 use ILIAS\Refinery\Validation\Constraint;
 use ILIAS\Refinery\Validation\Factory as ValidationFactory;
