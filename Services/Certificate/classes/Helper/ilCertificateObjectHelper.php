@@ -21,7 +21,7 @@ class ilCertificateObjectHelper
      * @param int $refId
      * @return int
      */
-    public function lookupObjId(int $refId) : int
+    public function lookupfixObjId(int $refId) : int
     {
         return ilObject::_lookupObjId($refId);
     }

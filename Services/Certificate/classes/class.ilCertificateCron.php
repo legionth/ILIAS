@@ -143,7 +143,7 @@ class ilCertificateCron extends \ilCronJob
     {
         $this->init();
 
-        $currentMode = $this->settings->get('persistent_certificate_mode', 'persistent_certificate_mode_instant');
+        $currentMode = $this->settings->get('persistent_certificate_mode', 'persistent_certificate_mode_cron');
         if ($currentMode !== 'persistent_certificate_mode_cron') {
             $this->logger->warning(sprintf('Will not start cron job, because the mode is not set as cron job. Current Mode in settings: "%s"', $currentMode));
             return;
