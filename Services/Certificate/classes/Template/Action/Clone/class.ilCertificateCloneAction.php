@@ -102,8 +102,6 @@ class ilCertificateCloneAction
             ));
         }
 
-        $newCertificate = $this->certificateFactory->create($newObject);
-
         $templates = $this->templateRepository->fetchCertificateTemplatesByObjId($oldObject->getId());
 
         /** @var ilCertificateTemplate $template */
