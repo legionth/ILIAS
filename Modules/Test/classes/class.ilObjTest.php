@@ -10929,7 +10929,6 @@ function getAnswerFeedbackPoints()
 		if ($this->canShowTestResults($testSession))
 		{
 			$factory = new ilCertificateFactory();
-			$cert = $factory->create($this);
 
 			$isComplete = false;
 			$userCertificateRepository = new ilUserCertificateRepository($this->db, $this->log);
