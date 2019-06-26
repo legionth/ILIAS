@@ -22,11 +22,6 @@ class ilPdfGenerator
     private $rpcHelper;
 
     /**
-     * @var ilCertificateScormPdfFilename|null
-     */
-    private $scormPdfFilename;
-
-    /**
      * @var ilCertificatePdfFileNameFactory|null
      */
     private $pdfFilenameFactory;
