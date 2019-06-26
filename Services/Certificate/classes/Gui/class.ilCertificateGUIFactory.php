@@ -48,10 +48,9 @@ class ilCertificateGUIFactory
                 $certificatePath = ilCertificatePathConstants::TEST_PATH . $objectId . '/';
 
                 $formFactory = new ilCertificateSettingsTestFormRepository(
-                    $objectId,
+                    $object,
                     $certificatePath,
                     false,
-                    $object,
                     $DIC->language(),
                     $DIC->ctrl(),
                     $DIC->access(),

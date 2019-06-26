@@ -22,10 +22,9 @@ class ilCertificateSettingsTestFormRepository implements ilCertificateFormReposi
     private $testObject;
 
     /**
-     * @param int                                      $objectId
+     * @param ilObjTest                                $testObject
      * @param string                                   $certificatePath
      * @param bool                                     $hasAdditionalElements
-     * @param ilObjTest                                $testObject
      * @param ilLanguage                               $language
      * @param ilCtrl                                   $controller
      * @param ilAccess                                 $access
@@ -34,10 +33,9 @@ class ilCertificateSettingsTestFormRepository implements ilCertificateFormReposi
      * @param ilCertificateSettingsFormRepository|null $settingsFormRepository
      */
     public function __construct(
-        int $objectId,
+        ilObjTest $testObject,
         string $certificatePath,
         bool $hasAdditionalElements,
-        ilObjTest $testObject,
         ilLanguage $language,
         ilCtrl $controller,
         ilAccess $access,
@@ -50,7 +48,7 @@ class ilCertificateSettingsTestFormRepository implements ilCertificateFormReposi
 
         if (null === $settingsFormRepository) {
             $settingsFormRepository = new ilCertificateSettingsFormRepository(
-                $objectId,
+                $testObject->getId(),
                 $certificatePath,
                 $hasAdditionalElements,
                 $language,
