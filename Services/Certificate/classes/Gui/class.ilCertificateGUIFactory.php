@@ -44,7 +44,6 @@ class ilCertificateGUIFactory
             case 'tst':
                 $placeholderDescriptionObject = new ilTestPlaceholderDescription();
                 $placeholderValuesObject = new ilTestPlaceHolderValues();
-                $adapter = new ilTestCertificateAdapter($object);
 
                 $certificatePath = ilCertificatePathConstants::TEST_PATH . $objectId . '/';
 
@@ -71,7 +70,6 @@ class ilCertificateGUIFactory
             case 'crs':
                 $hasAdditionalElements = true;
 
-                $adapter = new ilCourseCertificateAdapter($object);
                 $placeholderDescriptionObject = new ilCoursePlaceholderDescription();
                 $placeholderValuesObject = new ilCoursePlaceholderValues();
 
@@ -91,7 +89,6 @@ class ilCertificateGUIFactory
                 $certificatePath = ilCertificatePathConstants::COURSE_PATH . $objectId . '/';
                 break;
             case 'exc':
-                $adapter = new ilExerciseCertificateAdapter($object);
                 $placeholderDescriptionObject = new ilExercisePlaceholderDescription();
                 $placeholderValuesObject = new ilExercisePlaceHolderValues();
 
@@ -111,7 +108,6 @@ class ilCertificateGUIFactory
                 $certificatePath = ilCertificatePathConstants::EXERCISE_PATH . $objectId . '/';
                 break;
             case 'sahs':
-                $adapter = new ilSCORMCertificateAdapter($object);
                 $placeholderDescriptionObject = new ilScormPlaceholderDescription($object);
                 $placeholderValuesObject = new ilScormPlaceholderValues();
 
@@ -137,7 +133,6 @@ class ilCertificateGUIFactory
         }
 
         $gui = new ilCertificateGUI(
-            $adapter,
             $placeholderDescriptionObject,
             $placeholderValuesObject,
             $objectId,
