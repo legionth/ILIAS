@@ -43,13 +43,6 @@ class ilCertificate
     protected $lng;
 
     /**
-    * The certificate adapter
-    *
-    * @var ilCertificateAdapter
-    */
-    protected $adapter;
-
-    /**
      * @var ilSetting
      */
     protected $settings;
@@ -101,7 +94,6 @@ class ilCertificate
 
     /**
      * ilCertificate constructor
-     * @param ilCertificateAdapter $adapter The certificate adapter needed to construct the certificate
      * @param ilCertificatePlaceholderDescription $placeholderDescriptionObject
      * @param ilCertificatePlaceholderValues $placeholderValuesObject
      * @param $objectId - Object ID of the current component (e.g. course, test, exercise)
@@ -110,7 +102,6 @@ class ilCertificate
      * @param ilUserCertificateRepository|null $certificateRepository
      */
     public function __construct(
-        ilCertificateAdapter $adapter,
         ilCertificatePlaceholderDescription $placeholderDescriptionObject,
         ilCertificatePlaceholderValues $placeholderValuesObject,
         $objectId,
@@ -127,8 +118,6 @@ class ilCertificate
         $this->settings = $DIC['ilSetting'];
         $this->log      = $DIC['ilLog'];
         $this->db       = $DIC['ilDB'];
-
-        $this->adapter = $adapter;
 
         $this->placeholderDescriptionObject = $placeholderDescriptionObject;
 
