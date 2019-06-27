@@ -62,12 +62,12 @@ class ilCoursePlaceholderDescription implements ilCertificatePlaceholderDescript
             $template = new ilTemplate('tpl.default_description.html', true, true, 'Services/Certificate');
         }
 
-        $template->setVariable("PLACEHOLDER_INTRODUCTION", $this->language->txt('certificate_ph_introduction'));
+        $template->setVariable('PLACEHOLDER_INTRODUCTION', $this->language->txt('certificate_ph_introduction'));
 
-        $template->setCurrentBlock("items");
+        $template->setCurrentBlock('items');
         foreach ($this->placeholder as $id => $caption) {
-            $template->setVariable("ID", $id);
-            $template->setVariable("TXT", $caption);
+            $template->setVariable('ID', $id);
+            $template->setVariable('TXT', $caption);
             $template->parseCurrentBlock();
         }
 
