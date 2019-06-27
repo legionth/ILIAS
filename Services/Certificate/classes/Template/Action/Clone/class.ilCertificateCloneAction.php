@@ -11,10 +11,6 @@ class ilCertificateCloneAction
      */
     private $logger;
 
-    /**
-     * @var ilCertificateFactory
-     */
-    private $certificateFactory;
 
     /**
      * @var ilCertificateTemplateRepository
@@ -47,14 +43,12 @@ class ilCertificateCloneAction
      */
     public function __construct(
         ilDBInterface $database,
-        ilCertificateFactory $certificateFactory,
         ilCertificateTemplateRepository $templateRepository,
         \ILIAS\Filesystem\Filesystem $fileSystem = null,
         ilLogger $logger = null,
         ilCertificateObjectHelper $objectHelper = null
     ) {
         $this->database = $database;
-        $this->certificateFactory = $certificateFactory;
         $this->templateRepository = $templateRepository;
 
         if (null === $logger) {
