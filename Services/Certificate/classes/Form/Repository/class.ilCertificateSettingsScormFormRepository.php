@@ -27,15 +27,16 @@ class ilCertificateSettingsScormFormRepository implements ilCertificateFormRepos
     private $setting;
 
     /**
-     * @param ilObject $object
-     * @param string $certificatePath
-     * @param ilLanguage $language
-     * @param ilCtrl $controller
-     * @param ilAccess $access
-     * @param ilToolbarGUI $toolbar
-     * @param ilCertificatePlaceholderDescription $placeholderDescriptionObject
+     * @param ilObject                                 $object
+     * @param string                                   $certificatePath
+     * @param bool                                     $hasAdditionalElements
+     * @param ilLanguage                               $language
+     * @param ilCtrl                                   $controller
+     * @param ilAccess                                 $access
+     * @param ilToolbarGUI                             $toolbar
+     * @param ilCertificatePlaceholderDescription      $placeholderDescriptionObject
      * @param ilCertificateSettingsFormRepository|null $settingsFormRepository
-     * @param ilSetting|null $setting
+     * @param ilSetting|null                           $setting
      */
     public function __construct(
         ilObject $object,

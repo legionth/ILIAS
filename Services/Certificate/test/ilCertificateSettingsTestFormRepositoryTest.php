@@ -46,9 +46,9 @@ class ilCertificateSettingsTestFormRepositoryTest extends ilCertificateBaseTestC
             ->willReturn($formMock);
 
         $repository = new ilCertificateSettingsTestFormRepository(
-            100,
-            '/some/where/',
             $object,
+            '/some/where/',
+            false,
             $language,
             $controller,
             $access,
@@ -108,9 +108,9 @@ class ilCertificateSettingsTestFormRepositoryTest extends ilCertificateBaseTestC
             ->getMock();
 
         $repository = new ilCertificateSettingsTestFormRepository(
-            100,
-            '/some/where/',
             $object,
+            '/some/where/',
+            false,
             $language,
             $controller,
             $access,
@@ -162,9 +162,9 @@ class ilCertificateSettingsTestFormRepositoryTest extends ilCertificateBaseTestC
             ->willReturn(array('something' => 'value'));
 
         $repository = new ilCertificateSettingsTestFormRepository(
-            100,
-            '/some/where/',
             $object,
+            '/some/where/',
+            false,
             $language,
             $controller,
             $access,
