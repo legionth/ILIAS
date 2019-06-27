@@ -322,7 +322,7 @@ class ilCertificateGUI
         $this->fileSystem = $fileSystem;
 
         if (null === $backgroundImageDelete) {
-            $backgroundImageDelete = new ilCertificateBackgroundImageDelete();
+            $backgroundImageDelete = new ilCertificateBackgroundImageDelete($this->certificatePath);
         }
         $this->backgroundImageDelete = $backgroundImageDelete;
     }

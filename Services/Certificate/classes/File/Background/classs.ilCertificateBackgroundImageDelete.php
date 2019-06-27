@@ -6,6 +6,22 @@
  */
 class ilCertificateBackgroundImageDelete
 {
+    /**
+     * @var string
+     */
+    private $certificatePath;
+
+    /**
+     * @var string
+     */
+    private $webDirectory;
+
+    public function __construct(string $certificatePath, string $webDirectory = CLIENT_WEB_DIR)
+    {
+        $this->certificatePath = $certificatePath;
+        $this->webDirectory = $webDirectory;
+    }
+
     public function deleteBackgroundImage(string $version)
     {
         $result = true;
@@ -42,7 +58,7 @@ class ilCertificateBackgroundImageDelete
      */
     private function getBackgroundImageThumbPath()
     {
-        return CLIENT_WEB_DIR . $this->certificatePath . $this->getBackgroundImageName() . ".thumb.jpg";
+        return $this->webDirectory . $this->certificatePath . $this->getBackgroundImageName() . ".thumb.jpg";
     }
 
     /**
@@ -52,6 +68,25 @@ class ilCertificateBackgroundImageDelete
      */
     private function getBackgroundImageTempfilePath()
     {
-        return CLIENT_WEB_DIR . $this->certificatePath . "background_upload.tmp";
+        return $this->webDirectory . $this->certificatePath . "background_upload.tmp";
+    }
+
+    /**
+     * Returns the filesystem path of the background image
+     * @param bool   $asRelative
+     * @param string $backgroundImagePath
+     * @return string The filesystem path of the background image
+     */
+    private function getBackgroundImageDirectory($asRelative = false, $backgroundImagePath = '')
+    {
+        if ($asRelative) {
+            return str_replace(
+                array($this->webDirectory, '//'),
+                array('[CLIENT_WEB_DIR]', '/'),
+                $backgroundImagePath
+            );
+        }
+
+        return $this->certificatePath;
     }
 }
