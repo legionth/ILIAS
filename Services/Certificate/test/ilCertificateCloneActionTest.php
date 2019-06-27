@@ -113,6 +113,6 @@ class ilCertificateCloneActionTest extends ilCertificateBaseTestCase
         $newObject->method('getId')
             ->willReturn(10);
 
-        $cloneAction->cloneCertificate($oldObject, $newObject, 'v5.4.0', '/some/web/dir');
+        $cloneAction->cloneCertificate($oldObject, $newObject, ilCertificatePathConstants::EXERCISE_PATH, 'v5.4.0', '/some/web/dir');
     }
 }

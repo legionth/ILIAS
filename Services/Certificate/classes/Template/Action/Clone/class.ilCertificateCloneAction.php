@@ -72,7 +72,9 @@ class ilCertificateCloneAction
     /**
      * @param ilObject $oldObject
      * @param ilObject $newObject
-     * @param string $iliasVersion
+     * @param string   $certificatePath
+     * @param string   $iliasVersion
+     * @param string   $webDir
      * @throws \ILIAS\Filesystem\Exception\FileAlreadyExistsException
      * @throws \ILIAS\Filesystem\Exception\FileNotFoundException
      * @throws \ILIAS\Filesystem\Exception\IOException
@@ -82,6 +84,7 @@ class ilCertificateCloneAction
     public function cloneCertificate(
         ilObject $oldObject,
         ilObject $newObject,
+        string $certificatePath,
         string $iliasVersion = ILIAS_VERSION_NUMERIC,
         string $webDir = CLIENT_WEB_DIR
     ) {
@@ -104,8 +107,8 @@ class ilCertificateCloneAction
             $backgroundImageFile = basename($backgroundImagePath);
             $backgroundImageThumbnail = dirname($backgroundImagePath) . '/background.jpg.thumb.jpg';
 
-            $newBackgroundImage = $this->getBackgroundImageDirectory() . $backgroundImageFile;
-            $newBackgroundImageThumbnail = str_replace($webDir, '', $this->getBackgroundImageThumbPath());
+            $newBackgroundImage = $certificatePath . $backgroundImageFile;
+            $newBackgroundImageThumbnail = str_replace($webDir, '', $this->getBackgroundImageThumbPath($webDir, $certificatePath));
 
             if ($this->fileSystem->has($backgroundImagePath)) {
                 if ($this->fileSystem->has($newBackgroundImage)) {
@@ -180,30 +183,12 @@ class ilCertificateCloneAction
 
     /**
      * Returns the filesystem path of the background image thumbnail
-     *
+     * @param string $webDirectory
+     * @param        $certificatePath
      * @return string The filesystem path of the background image thumbnail
      */
-    private function getBackgroundImageThumbPath()
+    private function getBackgroundImageThumbPath(string $webDirectory, string $certificatePath)
     {
-        return CLIENT_WEB_DIR . $this->certificatePath . $this->getBackgroundImageName() . ".thumb.jpg";
-    }
-
-
-    /**
-     * Returns the filesystem path of the background image
-     * @param  bool $asRelative
-     * @return string The filesystem path of the background image
-     */
-    private function getBackgroundImageDirectory($asRelative = false, $backgroundImagePath = '')
-    {
-        if ($asRelative) {
-            return str_replace(
-                array(CLIENT_WEB_DIR, '//'),
-                array('[CLIENT_WEB_DIR]', '/'),
-                $backgroundImagePath
-            );
-        }
-
-        return $this->certificatePath;
+        return $webDirectory . $certificatePath . $this->getBackgroundImageName() . ".thumb.jpg";
     }
 }

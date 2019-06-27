@@ -279,7 +279,7 @@ class ilObjExercise extends ilObject
 			new ilCertificateObjectHelper()
 		);
 
-		$cloneAction->cloneCertificate($this, $new_obj);
+		$cloneAction->cloneCertificate($this, $new_obj, ilCertificatePathConstants::EXERCISE_PATH . $new_obj->getId() . '/');
 			
 		return $new_obj;
 	}

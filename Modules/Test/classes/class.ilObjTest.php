@@ -7570,7 +7570,7 @@ function getAnswerFeedbackPoints()
 			new ilCertificateObjectHelper()
 		);
 
-		$cloneAction->cloneCertificate($this, $newObj);
+		$cloneAction->cloneCertificate($this, $newObj, ilCertificatePathConstants::TEST_PATH . $newObj->getId() . '/');
 
 		$testQuestionSetConfigFactory = new ilTestQuestionSetConfigFactory($tree, $ilDB, $ilPluginAdmin, $this);
 		$testQuestionSetConfigFactory->getQuestionSetConfig()->cloneQuestionSetRelatedData($newObj);
