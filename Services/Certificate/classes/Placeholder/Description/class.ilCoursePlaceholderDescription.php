@@ -52,8 +52,9 @@ class ilCoursePlaceholderDescription implements ilCertificatePlaceholderDescript
     /**
      * This methods MUST return an array containing an array with
      * the the description as array value.
-     * @param null $template
+     * @param ilTemplate $template
      * @return mixed - [PLACEHOLDER] => 'description'
+     * @throws ilTemplateException
      */
     public function createPlaceholderHtmlDescription(ilTemplate $template = null) : string
     {
@@ -76,6 +77,7 @@ class ilCoursePlaceholderDescription implements ilCertificatePlaceholderDescript
     /**
      * This method MUST return an array containing an array with
      * the the description as array value.
+     *
      * @return mixed - [PLACEHOLDER] => 'description'
      */
     public function getPlaceholderDescriptions() : array
