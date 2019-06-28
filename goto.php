@@ -225,12 +225,6 @@ switch($target_type)
 		require_once('./Modules/RootFolder/classes/class.ilObjRootFolderGUI.php');
 		ilObjRootFolderGUI::_goto($target_id);
 		break;
-		
-	// please migrate to default branch implementation
-	case 'cert':
-		require_once('./Services/Certificate/classes/class.ilCertificate.php');
-		ilCertificate::_goto($target_id);
-		break;
 
 	// links to the documentation of the kitchen sink in the administration
 	case 'stys':

@@ -61,11 +61,7 @@ class ilCertificateSettingsTestFormRepositoryTest extends ilCertificateBaseTestC
             ->disableOriginalConstructor()
             ->getMock();
 
-        $certificateMock = $this->getMockBuilder('ilCertificate')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $result = $repository->createForm($guiMock, $certificateMock);
+        $result = $repository->createForm($guiMock);
 
         $this->assertEquals($formMock, $result);
     }
