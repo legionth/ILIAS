@@ -33,7 +33,6 @@ require_once "./Services/Object/classes/class.ilObject.php";
 */
 class ilObjCertificateSettings extends ilObject
 {
-    
     /**
     * Constructor
     * @access	public
@@ -46,9 +45,9 @@ class ilObjCertificateSettings extends ilObject
         $this->type = "cert";
     }
 
-    public function hasBackgroundImage()
+    public function hasDefaultBackgroundImage()
     {
-        if (@file_exists($this->getBackgroundImagePath()) && (@filesize($this->getBackgroundImagePath()) > 0)) {
+        if (@file_exists($this->getBackgroundDefaultImagePath()) && (@filesize($this->getBackgroundDefaultImagePath()) > 0)) {
             return true;
         } else {
             return false;
@@ -65,7 +64,7 @@ class ilObjCertificateSettings extends ilObject
     *
     * @return string The filesystem path of the background image
     */
-    public function getBackgroundImagePath()
+    public function getBackgroundDefaultImagePath()
     {
         return $this->getBackgroundImageDefaultFolder() . ilCertificateBackgroundImageFileService::BACKGROUND_IMAGE_NAME;
     }
@@ -98,7 +97,7 @@ class ilObjCertificateSettings extends ilObject
     public function getBackgroundImagePathWeb()
     {
         include_once "./Services/Utilities/classes/class.ilUtil.php";
-        return str_replace(ilUtil::removeTrailingPathSeparators(ILIAS_ABSOLUTE_PATH), ilUtil::removeTrailingPathSeparators(ILIAS_HTTP_PATH), $this->getBackgroundImagePath());
+        return str_replace(ilUtil::removeTrailingPathSeparators(ILIAS_ABSOLUTE_PATH), ilUtil::removeTrailingPathSeparators(ILIAS_HTTP_PATH), $this->getBackgroundDefaultImagePath());
     }
     
     /**
@@ -136,16 +135,16 @@ class ilObjCertificateSettings extends ilObject
                 return false;
             }
             // convert the uploaded file to JPEG
-            ilUtil::convertImage($this->getBackgroundImageTempfilePath(), $this->getBackgroundImagePath(), "JPEG");
+            ilUtil::convertImage($this->getBackgroundImageTempfilePath(), $this->getBackgroundDefaultImagePath(), "JPEG");
             ilUtil::convertImage($this->getBackgroundImageTempfilePath(), $this->getBackgroundImageThumbPath(), "JPEG", 100);
-            if (!file_exists($this->getBackgroundImagePath())) {
+            if (!file_exists($this->getBackgroundDefaultImagePath())) {
                 // something went wrong converting the file. use the original file and hope, that PDF can work with it
-                if (!ilUtil::moveUploadedFile($this->getBackgroundImageTempfilePath(), $convert_filename, $this->getBackgroundImagePath())) {
+                if (!ilUtil::moveUploadedFile($this->getBackgroundImageTempfilePath(), $convert_filename, $this->getBackgroundDefaultImagePath())) {
                     return false;
                 }
             }
             unlink($this->getBackgroundImageTempfilePath());
-            if (file_exists($this->getBackgroundImagePath()) && (filesize($this->getBackgroundImagePath()) > 0)) {
+            if (file_exists($this->getBackgroundDefaultImagePath()) && (filesize($this->getBackgroundDefaultImagePath()) > 0)) {
                 return true;
             }
         }
@@ -163,8 +162,8 @@ class ilObjCertificateSettings extends ilObject
         if (file_exists($this->getBackgroundImageThumbPath())) {
             $result = $result & unlink($this->getBackgroundImageThumbPath());
         }
-        if (file_exists($this->getBackgroundImagePath())) {
-            $result = $result & unlink($this->getBackgroundImagePath());
+        if (file_exists($this->getBackgroundDefaultImagePath())) {
+            $result = $result & unlink($this->getBackgroundDefaultImagePath());
         }
         if (file_exists($this->getBackgroundImageTempfilePath())) {
             $result = $result & unlink($this->getBackgroundImageTempfilePath());
