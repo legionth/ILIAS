@@ -86,7 +86,7 @@ class ilObjCertificateSettings extends ilObject
     */
     public function getBackgroundImageTempfilePath()
     {
-        return $this->getBackgroundImageDefaultFolder() . "background_upload.tmp";
+        return $this->getBackgroundImageDefaultFolder() . ilCertificateBackgroundImageFileService::BACKGROUND_TEMPORARY_UPLOAD_FILE_NAME;
     }
 
     /**
