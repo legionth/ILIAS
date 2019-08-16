@@ -56,7 +56,7 @@ class ilObjCertificateSettings extends ilObject
 
     public function getBackgroundImageDefaultFolder()
     {
-        return CLIENT_WEB_DIR . "/certificates/default/";
+        return CLIENT_WEB_DIR . ilCertificateBackgroundImageFileService::DEFAULT_BACKGROUND_RELATIVE_PATH;
     }
 
     /**

@@ -10,6 +10,7 @@ class ilCertificateBackgroundImageFileService
     const BACKGROUND_TEMPORARY_UPLOAD_FILE_NAME = 'background_upload.tmp';
     const BACKGROUND_THUMBNAIL_FILE_ENDING = '.thumb.jpg';
     const PLACEHOLDER_CLIENT_WEB_DIRECTORY = '[CLIENT_WEB_DIR]';
+    const DEFAULT_BACKGROUND_RELATIVE_PATH = '/certificates/default/';
 
     /**
      * @var \ILIAS\Filesystem\Filesystem
